@@ -5,6 +5,7 @@ library(ggplot2)
 library(lubridate)
 library(anytime)
 library(stringr)
+## Data Cleaning/Preparation
 # Reading the data
 data <- read_csv("imdb_data.csv")
 # Checking the data
@@ -97,6 +98,7 @@ directors <- directors_list %>%
             total_profit = sum(net_profit_M, na.rm = T))%>%
   arrange(desc(count))
 directors
+## Exploratory analysis
 # Does a bigger budget mean better profits?
 cor(new_data_v1$budget_M, new_data_v1$net_profit_M, use = "complete.obs")
 # Does a bigger budget mean better ratings?
