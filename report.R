@@ -26,7 +26,7 @@ summary(is.na(clean_data$release_date))
 # Extracting dates of the films using Google (ordered the same order as the print result for the names)
 movie_names <- unlist(as.vector(clean_data %>% 
                                   select(primaryTitle) %>%
-                                  filter(is.na(new_data$release_date))))
+                                  filter(is.na(clean_data$release_date))))
 movie_names
 dates <- c("February 12, 1993", "September 14, 1994", "October 1, 2004",
            "October 7, 2005", "April 21, 2016")
@@ -34,7 +34,7 @@ full_data <- clean_data
 for(i in 1:length(movie_names)){
   full_data$release_date[full_data$primaryTitle == movie_names[i]] <- dates[i]
 }
-# Verifiying the results
+# Verifying the results
 full_data %>% filter(primaryTitle %in% movie_names)
 summary(is.na(full_data$release_date))
 # Sampling the data revealed that the dates don't share the same format
@@ -69,7 +69,7 @@ new_data_v1 <- new_data %>%
   select(-c(budget, gross, net_profit))
 # It now looks better and more readable
 summary(new_data_v1$net_profit_M)
-# Extracting the genres and counting their occurences
+# Extracting the genres and counting their occurences and their performances
 genres_list <- new_data_v1 %>%
   #seperate_longer_delim is used to dedicate new rows for each genre in the column
   separate_longer_delim(genres, delim = ",")%>%
@@ -84,7 +84,7 @@ genres <- genres_list %>%
   arrange(desc(count))
 
 genres
-# In the same way, extracting the directors and counting their occurences
+# In the same way, extracting the directors and counting their occurences and their performances
 directors_list <- new_data_v1 %>%
   separate_longer_delim(directors, delim = ',')%>%
   select(directors, averageRating, net_profit_M)
