@@ -41,6 +41,7 @@ summary(is.na(full_data$release_date))
 # Sampling the data revealed that the dates don't share the same format
 # (I discovered this while trying to compensate the 5 missing dates)
 sample(full_data$release_date, 50, replace = T)
+summary(is.na(ymd(full_data$release_date)))
 summary(is.na(anydate(full_data$release_date)))
 summary(is.na(as.Date(full_data$release_date, format = c("%Y", "%B %Y", "%B %d, %Y"))))
 # All the other functions won't work, so I had to search for a better solution
@@ -63,15 +64,15 @@ new_data <- new_data %>% mutate(net_profit = gross - budget)
 summary(new_data$net_profit)
 # After exploring the summary, the values seem to be too large to only display in USD
 # so we'll be adding new columns containing the values in millions of USD
-new_data_v1 <- new_data %>%
+final_data <- new_data %>%
   mutate(budget_M = budget / 1000000,
          gross_M = gross / 1000000,
          net_profit_M = net_profit / 1000000)%>%
   select(-c(budget, gross, net_profit))
 # It now looks better and more readable
-summary(new_data_v1$net_profit_M)
+summary(final_data$net_profit_M)
 # Extracting the genres and counting their occurences and their performances
-genres_list <- new_data_v1 %>%
+genres_list <- final_data %>%
   #seperate_longer_delim is used to dedicate new rows for each genre in the column
   separate_longer_delim(genres, delim = ",")%>%
   select(genres, averageRating, net_profit_M)
@@ -86,7 +87,7 @@ genres <- genres_list %>%
 
 genres
 # In the same way, extracting the directors and counting their occurences and their performances
-directors_list <- new_data_v1 %>%
+directors_list <- final_data %>%
   separate_longer_delim(directors, delim = ',')%>%
   select(directors, averageRating, net_profit_M)
 
@@ -99,18 +100,13 @@ directors <- directors_list %>%
   arrange(desc(count))
 directors
 ## Exploratory analysis
+# Which year holds the most number of produced movies?
+year(final_data$release_date) %>% table()
 # Does a bigger budget mean better profits?
-cor(new_data_v1$budget_M, new_data_v1$net_profit_M, use = "complete.obs")
+cor(final_data$budget_M, final_data$net_profit_M, use = "complete.obs")
 # Does a bigger budget mean better ratings?
-cor(new_data_v1$averageRating, new_data_v1$budget_M, use = "complete.obs")
+cor(final_data$averageRating, final_data$budget_M, use = "complete.obs")
 # Do longer movies perform better in terms of profits?
-cor(new_data_v1$runtimeMinutes, new_data_v1$net_profit_M, use = "complete.obs")
+cor(final_data$runtimeMinutes, final_data$net_profit_M, use = "complete.obs")
 # Do longer movies have higher ratings?
-cor(new_data_v1$runtimeMinutes, new_data_v1$averageRating, use = "complete.obs")
-
-
-new_data %>% ggplot(aes(runtimeMinutes))+
-  geom_bar()+
-  scale_x_binned()
-  
-# Most of the movies are between 80 and 180 mins
+cor(final_data$runtimeMinutes, final_data$averageRating, use = "complete.obs")
